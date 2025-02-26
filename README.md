@@ -463,3 +463,195 @@ docker stop myflaskapp && docker rm myflaskapp
 
 ---
 
+
+
+---
+
+## **🚀 Step-by-Step Guide to Setting Up MongoDB with Docker and Using It in an Application**  
+
+In this guide, we'll:  
+✅ **Run MongoDB in Docker**  
+✅ **Connect a Node.js app to MongoDB**  
+✅ **Create a Docker image**  
+✅ **Push the image to GitHub Container Registry**  
+✅ **Pull and use the image in any system**  
+
+---
+
+## **1️⃣ Set Up MongoDB with Docker**
+### **📌 Run MongoDB as a Docker Container**
+```bash
+docker run -d --name mymongo -p 27017:27017 mongo
+```
+👉 This runs MongoDB in a **detached mode** and maps the container’s port **27017** to the local machine.
+
+### **📌 Verify MongoDB is Running**
+```bash
+docker ps
+```
+👉 You should see a running MongoDB container.
+
+### **📌 Access MongoDB Inside the Container**
+```bash
+docker exec -it mymongo mongosh
+```
+(*This opens the MongoDB shell where you can create databases and collections.*)
+
+---
+
+## **2️⃣ Create an Application that Connects to MongoDB**
+We will now create a **Node.js application** that connects to MongoDB.
+
+### **📌 Create the Project Folder**
+```bash
+mkdir mongo-node-app && cd mongo-node-app
+```
+
+### **📌 Initialize a Node.js Project**
+```bash
+npm init -y
+```
+
+### **📌 Install Dependencies**
+```bash
+npm install express mongoose
+```
+
+### **📌 Create `server.js`**
+```javascript
+const express = require("express");
+const mongoose = require("mongoose");
+
+const app = express();
+const PORT = 3000;
+
+// Connect to MongoDB
+mongoose.connect("mongodb://mymongo:27017/mydatabase", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log("Connected to MongoDB"))
+  .catch(err => console.error("MongoDB connection error:", err));
+
+// Define a simple schema
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+});
+
+const User = mongoose.model("User", UserSchema);
+
+// API Route
+app.get("/", async (req, res) => {
+  const users = await User.find();
+  res.json(users);
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+```
+
+### **📌 Create `Dockerfile`**
+```dockerfile
+# Use Node.js as the base image
+FROM node:18
+
+# Set the working directory
+WORKDIR /app
+
+# Copy application files
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copy remaining files
+COPY . .
+
+# Expose the application port
+EXPOSE 3000
+
+# Run the application
+CMD ["node", "server.js"]
+```
+
+---
+
+## **3️⃣ Run MongoDB and Node.js App Together**
+We will use **Docker Compose** to start both services together.
+
+### **📌 Create `docker-compose.yml`**
+```yaml
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo
+    container_name: mymongo
+    ports:
+      - "27017:27017"
+    restart: always
+
+  app:
+    build: .
+    container_name: mynodeapp
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    restart: always
+```
+
+### **📌 Build and Start the Services**
+```bash
+docker-compose up -d --build
+```
+
+### **📌 Open the App in Browser**
+👉 **[http://localhost:3000](http://localhost:3000/)**  
+You should see an empty JSON array `[]` (since no users are added yet).  
+
+---
+
+## **4️⃣ Create a Docker Image and Push to GitHub Container Registry**
+We will now push our **Docker image** to **GitHub Container Registry** so it can be used anywhere.
+
+### **📌 Login to GitHub Container Registry**
+```bash
+echo "YOUR_GITHUB_PAT" | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+```
+
+### **📌 Tag the Image**
+```bash
+docker tag mynodeapp ghcr.io/YOUR_GITHUB_USERNAME/mynodeapp:latest
+```
+
+### **📌 Push the Image**
+```bash
+docker push ghcr.io/YOUR_GITHUB_USERNAME/mynodeapp:latest
+```
+
+---
+
+## **5️⃣ Pull and Use the Image on Any System**
+Now, anyone can pull and run your image.
+
+### **📌 Pull the Image**
+```bash
+docker pull ghcr.io/YOUR_GITHUB_USERNAME/mynodeapp:latest
+```
+
+### **📌 Run the Container**
+```bash
+docker run -d -p 3000:3000 --name mynodeapp ghcr.io/YOUR_GITHUB_USERNAME/mynodeapp:latest
+```
+
+---
+
+## **🎯 Summary**
+✔ **MongoDB in Docker** ✅  
+✔ **Node.js app connecting to MongoDB** ✅  
+✔ **Dockerfile & Docker Compose** ✅  
+✔ **Push image to GitHub Container Registry** ✅  
+✔ **Pull and use the image** ✅  
+
