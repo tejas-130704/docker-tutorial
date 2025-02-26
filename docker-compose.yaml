@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+    mongo:
+        image: mongo
+        container_name: mymongo
+        ports:
+            - "27017:27017"
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: admin123
+        volumes:
+            - mongo-data:/data/db
+
+    mongo-express:
+        image: mongo-express
+        container_name: mymongoexpress
+        ports:
+            - "8081:8081"
+        restart: always
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+            ME_CONFIG_MONGODB_ADMINPASSWORD: admin123
+            ME_CONFIG_MONGODB_SERVER: mongo
+            ME_CONFIG_BASICAUTH: "false"  # Disables additional Mongo Express login
+
+volumes:
+    mongo-data:
+        driver: local

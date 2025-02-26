@@ -350,3 +350,116 @@ docker-compose restart
 ✅ **Persistent Storage** using **Docker Volumes**  
 ✅ **Mongo Express UI** available at **localhost:8081**  
 
+---
+
+Here’s a **step-by-step guide** to creating a **Flask "Hello, World"** app with Docker.  
+
+---
+
+## **🚀 Steps to Dockerize a Flask App**
+### **1️⃣ Create the Project Folder**
+```bash
+mkdir flask-app
+cd flask-app
+```
+
+### **2️⃣ Create `app.py` (Flask App)**
+```python
+# app.py
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, World! Welcome to Flask in Docker!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+```
+
+### **3️⃣ Create `requirements.txt`**
+```txt
+flask
+```
+(*This ensures Flask gets installed inside the container.*)
+
+### **4️⃣ Create a `Dockerfile`**
+```dockerfile
+# Use an official Python image as the base
+FROM python:3.9-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the application files COPY SRC DEST
+COPY . /app
+
+# Install dependencies
+RUN pip install -r requirements.txt
+
+# Expose the application port
+EXPOSE 5000
+
+# Run the application
+CMD ["python", "app.py"]
+or
+CMD python app.py
+```
+
+### **5️⃣ Build the Docker Image**
+```bash
+docker build -t flask-hello .
+or
+docker build -t tejasjadhav/flask-hello:0.0.1.RELEASE .
+```
+(*This creates a Docker image named `flask-hello`.*)
+
+### **6️⃣ Run the Flask Container**
+```bash
+docker run -d -p 5000:5000 --name myflaskapp flask-hello
+or
+docker run -d -p 5000:5000 tejasjadhav/flask-hello:0.0.1.RELEASE
+```
+(*Runs the container in detached mode, mapping port 5000 of the container to port 5000 of your system.*)
+
+### **7️⃣ Open in Browser**
+👉 **[http://localhost:5000](http://localhost:5000/)**  
+You should see:  
+```plaintext
+Hello, World! Welcome to Flask in Docker!
+```
+
+---
+
+## **🚀 Docker Compose Version**
+Instead of manually running commands, you can use **Docker Compose**:
+
+### **🔹 `docker-compose.yml`**
+```yaml
+version: "3.8"
+services:
+  flask-app:
+    build: .
+    container_name: myflaskapp
+    ports:
+      - "5000:5000"
+    restart: always
+```
+
+### **🔹 Run with Docker Compose**
+```bash
+docker-compose up -d --build
+```
+
+---
+
+## **🛑 Stop & Remove Container**
+To stop and remove everything:
+```bash
+docker stop myflaskapp && docker rm myflaskapp
+
+```
+
+---
+
