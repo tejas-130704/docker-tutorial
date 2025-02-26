@@ -8,7 +8,7 @@ Your project should have the following structure:
 ```
 /your-project
 │── /backend                 # Express backend
-│   ├── server.js
+│   ├── index.js
 │   ├── package.json
 │   ├── Dockerfile
 │── /frontend/Student_Management  # React frontend (Vite)
@@ -29,7 +29,7 @@ npm init -y
 npm install express mongoose cors dotenv
 ```
 
-Create `server.js`:
+Create `index.js`:
 
 ---
 
@@ -70,7 +70,7 @@ Once started, check:
 - **MongoDB** → `mongodb://admin:password@localhost:27017/userdb`
 - **Mongo Express** → [http://localhost:8081](http://localhost:8081)
 - **Backend (Express)** → [http://localhost:3000](http://localhost:3000)
-- **Frontend (React)** → [http://localhost](http://localhost)
+- **Frontend (React)** → [http://localhost:5173](http://localhost:5173)
 
 ---
 
@@ -87,7 +87,7 @@ Go to [GitHub](https://github.com) → **New Repository** → Follow instruction
 
 ### **c) Push Code**
 ```sh
-git remote add origin https://github.com/your-username/your-repo.git
+git remote add origin https://github.com/tejas-130704/docker-tutorial.git
 git branch -M main
 git push -u origin main
 ```
@@ -98,8 +98,8 @@ git push -u origin main
 To run on another machine:
 
 ```sh
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/tejas-130704/docker-tutorial.git
+cd docker-tutorial
 docker-compose up --build
 ```
 
